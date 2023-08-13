@@ -9,10 +9,10 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float rotationSpeed;
 
     // Check if the player is on the ground parameters.
-    [SerializeField] private LayerMask checkLayer;
-    [SerializeField] private Transform checkPoint;
+    [SerializeField] private LayerMask checkGroundLayer;
+    [SerializeField] private Transform checkGroundPosition;
     [SerializeField] private bool isOnGround;
-    [SerializeField] private Vector2 checkBoxArea;
+    [SerializeField] private Vector2 checkGroundBoxArea;
 
 
     // Essential components and values for jumping since we use force to jump.
@@ -22,6 +22,18 @@ public class PlayerMovement : MonoBehaviour
 
     // Sprite transform, (we mainly use it to rotate player for more accurate rotation.)
     [SerializeField] private Transform playerSpriteTransform;
+
+
+    // Check if the player is touched obstacle parameters.
+    [SerializeField] private bool isTouchedObstacle;
+    [SerializeField] private Transform checkObstaclePosition;
+    [SerializeField] private Vector2 checkObstacleBoxArea;
+    [SerializeField] private LayerMask checkObstacleLayer;
+
+    // Fly mode parameters
+    [SerializeField] private float gravity;
+    [SerializeField] private float flyingRotationSpeed;
+
 
     /// <summary>
     /// Gets component in the first beginning of the launch of the game.
@@ -35,9 +47,10 @@ public class PlayerMovement : MonoBehaviour
     {
         MovePlayer();
 
-        if(GameManager.instance.gameMode == GameModes.Run)
+        if (GameManager.instance.gameMode == GameModes.Run)
             JumpAndRotationHandling();
-
+        else
+            FlyHandling();
     }
 
     /// <summary>
@@ -46,6 +59,19 @@ public class PlayerMovement : MonoBehaviour
     private void MovePlayer()
     {
         transform.position += movementSpeed * Time.deltaTime * Vector3.right;
+    }
+
+    /// <summary>
+    /// Handles the player flying
+    /// </summary>
+    private void FlyHandling()
+    {
+        transform.rotation = Quaternion.Euler(0,0,rb.velocity.y * flyingRotationSpeed);
+
+        if (Input.GetMouseButton(0))
+            rb.gravityScale = -gravity;
+        else
+            rb.gravityScale = gravity;
     }
 
     /// <summary>
@@ -93,8 +119,18 @@ public class PlayerMovement : MonoBehaviour
     /// </summary>
     private bool IsOnGround()
     {
-        isOnGround = Physics2D.OverlapBox(checkPoint.transform.position, checkBoxArea, 0, checkLayer);
+        isOnGround = Physics2D.OverlapBox(checkGroundPosition.transform.position, checkGroundBoxArea, 0, checkGroundLayer);
         return isOnGround;
+    }
+
+    /// <summary>
+    /// Checks if the player touched the obstacle,
+    /// if true player dies.
+    /// </summary>
+    private bool IsTouchedObstacle()
+    {
+        isTouchedObstacle = Physics2D.OverlapBox(checkObstaclePosition.transform.position, checkObstacleBoxArea, 0, checkObstacleLayer);
+        return isTouchedObstacle;
     }
 
     /// <summary>
@@ -125,7 +161,8 @@ public class PlayerMovement : MonoBehaviour
     /// </summary>
     private void OnDrawGizmos()
     {
-        Gizmos.DrawCube(checkPoint.transform.position, new Vector3(checkBoxArea.x,checkBoxArea.y,0));
+        Gizmos.DrawCube(checkGroundPosition.transform.position, new Vector3(checkGroundBoxArea.x,checkGroundBoxArea.y,0));
+        Gizmos.DrawCube(checkObstaclePosition.transform.position, new Vector3(checkObstacleBoxArea.x, checkObstacleBoxArea.y, 0));
     }
 
     /// <summary>
