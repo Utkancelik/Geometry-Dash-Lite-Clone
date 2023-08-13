@@ -55,6 +55,9 @@ public class PlayerMovement : MonoBehaviour
         // If player is on the ground then get mouse input and jump.
         if (IsOnGround())
         {
+            // Stabilize the rotation of sprite of the player.
+            StabilizeTheRotation();
+
             // Left Click
             if (Input.GetMouseButton(0))
             {
@@ -97,6 +100,20 @@ public class PlayerMovement : MonoBehaviour
     private void RotatePlayerSprite()
     {
         playerSpriteTransform.Rotate(100 * rotationSpeed * Time.deltaTime * Vector3.back);
+    }
+
+    /// <summary>
+    /// When falling on the ground, the player does not sit accurate,
+    /// So we need to stabilize the stance of the player.
+    /// </summary>
+    private void StabilizeTheRotation()
+    {
+        // Get sprite currently rotation
+        Vector3 rotation = playerSpriteTransform.rotation.eulerAngles;
+        // Then in the z-axis (which is the only axis we are rotating), round the current rotation
+        rotation.z = Mathf.Round(rotation.z / 90) * 90;
+        // Lastly assign new rotation value.
+        playerSpriteTransform.transform.rotation = Quaternion.Euler(rotation);
     }
 
 }
