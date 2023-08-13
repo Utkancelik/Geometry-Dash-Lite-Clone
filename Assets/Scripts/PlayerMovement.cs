@@ -116,4 +116,11 @@ public class PlayerMovement : MonoBehaviour
         playerSpriteTransform.transform.rotation = Quaternion.Euler(rotation);
     }
 
+    /// <summary>
+    /// To easily control the circle that we created for checking if the player is on ground
+    /// </summary>
+    private void OnDrawGizmos()
+    {
+        Gizmos.DrawSphere(checkPoint.transform.position, checkRadius);
+    }
 }

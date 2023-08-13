@@ -309,7 +309,7 @@ MonoBehaviour:
     m_Bits: 8
   checkPoint: {fileID: 419943469}
   isOnGround: 0
-  checkRadius: 0.05
+  checkRadius: 0.1
   jumpForce: 25
   playerSpriteTransform: {fileID: 88965926}
 --- !u!1 &419943468
