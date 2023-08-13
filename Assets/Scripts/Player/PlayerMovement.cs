@@ -52,13 +52,13 @@ public class PlayerMovement : MonoBehaviour
         if (IsTouchedObstacle())
         {
             // Restart
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            SceneController.instance.RestartLevel();
         }
         
 
         if (GameManager.instance.gameMode == GameModes.Run)
             JumpAndRotationHandling();
-        else
+        else if(GameManager.instance.gameMode == GameModes.Fly)
             FlyHandling();
     }
 
@@ -141,6 +141,7 @@ public class PlayerMovement : MonoBehaviour
         isTouchedObstacle = Physics2D.OverlapCircle(checkObstaclePosition.transform.position, checkObstacleRadius, checkObstacleLayer);
         return isTouchedObstacle;
     }
+
 
     /// <summary>
     /// Rotates the player sprite when player is not on the ground (on air.)
