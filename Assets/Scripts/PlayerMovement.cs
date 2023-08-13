@@ -12,7 +12,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private LayerMask checkLayer;
     [SerializeField] private Transform checkPoint;
     [SerializeField] private bool isOnGround;
-    [SerializeField] private float checkRadius;
+    [SerializeField] private Vector2 checkBoxArea;
 
 
     // Essential components and values for jumping since we use force to jump.
@@ -34,7 +34,10 @@ public class PlayerMovement : MonoBehaviour
     private void Update()
     {
         MovePlayer();
-        GetInput();
+
+        if(GameManager.instance.gameMode == GameModes.Run)
+            JumpAndRotationHandling();
+
     }
 
     /// <summary>
@@ -50,7 +53,7 @@ public class PlayerMovement : MonoBehaviour
     /// Calls function for each input. (Calls Jump function for Spacebar input.)
     /// Space -> Jump
     /// </summary>
-    private void GetInput()
+    private void JumpAndRotationHandling()
     {
         // If player is on the ground then get mouse input and jump.
         if (IsOnGround())
@@ -90,7 +93,7 @@ public class PlayerMovement : MonoBehaviour
     /// </summary>
     private bool IsOnGround()
     {
-        isOnGround = Physics2D.OverlapCircle(checkPoint.transform.position, checkRadius, checkLayer);
+        isOnGround = Physics2D.OverlapBox(checkPoint.transform.position, checkBoxArea, 0, checkLayer);
         return isOnGround;
     }
 
@@ -117,10 +120,28 @@ public class PlayerMovement : MonoBehaviour
     }
 
     /// <summary>
-    /// To easily control the circle that we created for checking if the player is on ground
+    /// To easily control the box that we created for checking if the player is on ground
+    /// This method shows us the box on the game screen.
     /// </summary>
     private void OnDrawGizmos()
     {
-        Gizmos.DrawSphere(checkPoint.transform.position, checkRadius);
+        Gizmos.DrawCube(checkPoint.transform.position, new Vector3(checkBoxArea.x,checkBoxArea.y,0));
+    }
+
+    /// <summary>
+    /// Call this when player enters in the portal.
+    /// It toggles the game mode (run,fly)
+    /// </summary>
+    public void ToggleGameMode()
+    {
+        GameModes currentGameMode = GameManager.instance.gameMode;
+        if (currentGameMode == GameModes.Run)
+        {
+            GameManager.instance.gameMode = GameModes.Fly;
+        }
+        else
+        {
+            GameManager.instance.gameMode = GameModes.Run;
+        }
     }
 }
