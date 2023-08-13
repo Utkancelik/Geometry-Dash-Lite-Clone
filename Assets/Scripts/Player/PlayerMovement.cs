@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -27,7 +28,7 @@ public class PlayerMovement : MonoBehaviour
     // Check if the player is touched obstacle parameters.
     [SerializeField] private bool isTouchedObstacle;
     [SerializeField] private Transform checkObstaclePosition;
-    [SerializeField] private Vector2 checkObstacleBoxArea;
+    [SerializeField] private float checkObstacleRadius;
     [SerializeField] private LayerMask checkObstacleLayer;
 
     // Fly mode parameters
@@ -45,7 +46,15 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
+        // Always move player
         MovePlayer();
+        // Always check if the player touches an obstacle
+        if (IsTouchedObstacle())
+        {
+            // Restart
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        }
+        
 
         if (GameManager.instance.gameMode == GameModes.Run)
             JumpAndRotationHandling();
@@ -129,7 +138,7 @@ public class PlayerMovement : MonoBehaviour
     /// </summary>
     private bool IsTouchedObstacle()
     {
-        isTouchedObstacle = Physics2D.OverlapBox(checkObstaclePosition.transform.position, checkObstacleBoxArea, 0, checkObstacleLayer);
+        isTouchedObstacle = Physics2D.OverlapCircle(checkObstaclePosition.transform.position, checkObstacleRadius, checkObstacleLayer);
         return isTouchedObstacle;
     }
 
@@ -162,7 +171,7 @@ public class PlayerMovement : MonoBehaviour
     private void OnDrawGizmos()
     {
         Gizmos.DrawCube(checkGroundPosition.transform.position, new Vector3(checkGroundBoxArea.x,checkGroundBoxArea.y,0));
-        Gizmos.DrawCube(checkObstaclePosition.transform.position, new Vector3(checkObstacleBoxArea.x, checkObstacleBoxArea.y, 0));
+        Gizmos.DrawWireSphere(checkObstaclePosition.transform.position, checkObstacleRadius);
     }
 
     /// <summary>
